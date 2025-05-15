@@ -1,73 +1,128 @@
 import ply.yacc as yacc
-from facturas import tokens  # Importa los tokens desde tu lexer
 from uploadXML import XMLLoader as XML
+from lexer4 import tokens
 
-# Reglas de precedencia (si es necesario)
-precedence = ()
+# Variables globales del parser
+valid = True
+emisor_attrs = {}
+receptor_attrs = {}
 
-# Reglas gramaticales
+# Reglas sintácticas
+
+def p_tag_autocontenida(p):
+    'tag : LT TAG_NAME atributos SLASH_GT'
+    # Manejar <cfdi:Emisor ... />
+    p[0] = {'tag': p[2], 'attrs': p[3], 'children': []}
+
+
 def p_comprobante(p):
-    '''comprobante : LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT'''
+    '''
+    comprobante : LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
+    '''
     if p[2] != 'cfdi:Comprobante' or p[10] != 'cfdi:Comprobante':
-        print("❌ Error: Las etiquetas de apertura y cierre de Comprobante no coinciden")
+        print(" Las etiquetas <cfdi:Comprobante> no coinciden")
+        global valid
+        valid = False
     else:
-        print("✅ Comprobante estructurado correctamente")
+        print("[SINTÁCTICO] ✅ Nodo <cfdi:Comprobante> estructuralmente correcto")
 
 def p_emisor(p):
-    '''emisor : LT TAG_NAME atributos SLASH GT'''
+    'emisor : LT TAG_NAME atributos SLASH_GT'
+    global valid, emisor_attrs
     if p[2] != 'cfdi:Emisor':
-        print("❌ Error: Se esperaba <cfdi:Emisor />")
+        print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Emisor>")
+        valid = False
     else:
-        print("✅ Emisor correcto")
+        emisor_attrs = p[3]
+        print("[SINTÁCTICO] ✅ Nodo <cfdi:Emisor> correcto")
 
 def p_receptor(p):
-    '''receptor : LT TAG_NAME atributos SLASH GT'''
+    'receptor : LT TAG_NAME atributos SLASH_GT'
+    global valid, receptor_attrs
     if p[2] != 'cfdi:Receptor':
-        print("❌ Error: Se esperaba <cfdi:Receptor />")
+        print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Receptor>")
+        valid = False
     else:
-        print("✅ Receptor correcto")
+        receptor_attrs = p[3]
+        print("[SINTÁCTICO] ✅ Nodo <cfdi:Receptor> correcto")
 
 def p_conceptos(p):
-    '''conceptos : LT TAG_NAME GT concepto LT SLASH TAG_NAME GT'''
+    'conceptos : LT TAG_NAME GT concepto LT SLASH TAG_NAME GT'
+    global valid
     if p[2] != 'cfdi:Conceptos' or p[7] != 'cfdi:Conceptos':
-        print("❌ Error: <cfdi:Conceptos> mal estructurado")
+        
+        print("[SINTÁCTICO] ❌ Etiquetas <cfdi:Conceptos> no coinciden")
+        valid = False
     else:
-        print("✅ Conceptos correcto")
+        print("[SINTÁCTICO] ✅ Nodo <cfdi:Conceptos> correcto")
 
 def p_concepto(p):
-    '''concepto : LT TAG_NAME atributos SLASH GT'''
+    'concepto : LT TAG_NAME atributos SLASH_GT'
+    global valid
     if p[2] != 'cfdi:Concepto':
-        print("❌ Error: Se esperaba <cfdi:Concepto />")
+        print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Concepto>")
+        valid = False
     else:
-        print("✅ Concepto correcto")
+        print("[SINTÁCTICO] ✅ Nodo <cfdi:Concepto> correcto")
 
 def p_atributos(p):
-    '''atributos : atributo atributos
-                 | atributo'''
-    # Acepta múltiples atributos
+    '''
+    atributos : atributo atributos
+              | atributo
+              | empty
+    '''
+    if len(p) == 3:
+        p[0] = {**p[1], **p[2]}
+    elif len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = {}
 
 def p_atributo(p):
-    '''atributo : ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE'''
-    pass  # Aquí podrías verificar semánticamente los nombres y formatos si quieres
+    'atributo : ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE'
+    p[0] = {p[1]: p[3]}
 
-# Regla de error
+def p_empty(p):
+    'empty :'
+    p[0] = {}
+
 def p_error(p):
+    global valid
     if p:
-        print(f"❌ Error de sintaxis en '{p.value}' en la línea {p}")
+        print(f"[SINTÁCTICO] ❌ Error de sintaxis en: {p}")
     else:
-        print("❌ Error de sintaxis al final del archivo")
+        print("[SINTÁCTICO] ❌ Error de sintaxis al final del archivo")
+    valid = False
 
-
-# Construir el parser
+# Construcción del parser
 parser = yacc.yacc()
 
-# Prueba
 if __name__ == "__main__":
-    from facturas import lexer
-    xml = XML("./XML'S/A-252.xml")
+    from lexer4 import lexer
+    xml = XML("./XML'S/test.xml")
     xml.cargar()
     data = xml.contenido
-    test_input = '''<cfdi:Comprobante version="3.3" xmlns:cfdi="http://www.sat.gob.mx/cfd/3" />
-''' 
-    lexer.input(test_input)
+    test_input = data
+
+    # Reset variables antes del parseo
+    valid = True
+    emisor_attrs = {}
+    receptor_attrs = {}
+
     parser.parse(test_input, lexer=lexer)
+
+    if not valid:
+        print("[SEMÁNTICO] ❌ El archivo contiene errores sintácticos.")
+    else:
+        errores = []
+        if "Rfc" not in emisor_attrs or emisor_attrs["Rfc"] == "":
+            errores.append("El atributo obligatorio Rfc está ausente o vacío en <cfdi:Emisor>.")
+        if "Rfc" not in receptor_attrs or receptor_attrs["Rfc"] == "":
+            errores.append("El atributo obligatorio Rfc está ausente o vacío en <cfdi:Receptor>.")
+
+        if errores:
+            print("[SEMÁNTICO] ❌ El archivo es inválido por las siguientes razones:")
+            for e in errores:
+                print(f" - {e}")
+        else:
+            print("[SEMÁNTICO] ✅ El archivo CFDI es válido.")

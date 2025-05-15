@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante Version="4.0" 
+    xmlns:cfdi="http://www.sat.gob.mx/cfd/4" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" 
+    Serie="A" 
+    Folio="252" 
+    Fecha="2025-04-01T22:09:16" 
+    NoCertificado="00001000000511100602" 
+    Certificado="Certificado" 
+    Exportacion="01" 
+    Moneda="MXN" 
+    TipoDeComprobante="E" 
+    MetodoPago="PUE" 
+    FormaPago="15" 
+    SubTotal="74608.83" 
+    Total="86546.24" 
+    LugarExpedicion="44630" 
+    Sello="Sello">
+    <cfdi:CfdiRelacionados TipoRelacion="01">
+    <cfdi:Emisor Rfc="TAS131202GH3" Nombre="TECNOLOGIA APLICADA EN SERVICIOS DE INFRAESTRUCTURA" RegimenFiscal="626"/>
+    <cfdi:Receptor Rfc="ACO070606CY5" Nombre="ALDSANBM CONSTRUCTORA"  UsoCFDI="G03" DomicilioFiscalReceptor="44270" RegimenFiscalReceptor="626"/>
+    <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="84111506" Cantidad="1.00" ClaveUnidad="ACT" Descripcion="Descuento pago de estimación 2" ValorUnitario="74608.83" Importe="74608.83" ObjetoImp="02">
+    <cfdi:Impuestos>
+    <cfdi:Traslados>
+    <cfdi:Traslado Base="74608.83" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="11937.41"/>
+    </cfdi:Traslados>
+    </cfdi:Impuestos>
+    </cfdi:Concepto>
+    </cfdi:Conceptos>
+    <cfdi:Impuestos TotalImpuestosTrasladados="11937.41">
+    <cfdi:Traslados>
+    <cfdi:Traslado Base="74608.83" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000"  Importe="11937.41"/>
+    </cfdi:Traslados>
+    </cfdi:Impuestos>	
+    <cfdi:Complemento>
+		<tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" Version="1.1" UUID="3EA30B1B-0F78-11F0-A4D0-00155D014009" FechaTimbrado="2025-04-01T22:09:16" RfcProvCertif="TBN040609RKA" SelloCFD="a6GbOV7cRKZGODHjOsm8S6afZSntPQBj71z5ntDg00TFCF8Zp/XOv4WNxlpETP9UCuv5JRW1wfKaYXQJNIuBMJ/kzBOf7Ui0go8Npq9ZogFl4W5wesAglwMuo6g39P8XzHsXzvY4gNDlnnxoIyW2Z4iOKQROQmhJLWh8AwQ1Oom55f7GRQwFd7ocAiXvVVwbhS6lOPHzMuRP7JbrSk7Is/GCHPMjREe/gYycqByyQ46apOA890vmm8CU7SUmDqzgPC5cckd2BoiYbgx7N3QXTU8/HfNvSdlNfd2kKTbpNywiNxQAJL0VHr8gIhojjFe/Q6sAOUBeWW1Y23PbzeiGKw==" NoCertificadoSAT="00001000000708361114" SelloSAT="GkUmZKUppN2eDrGVqRmNmX4JF4vtIShbKcrop6MLHYfxBNPJmXHw/EM3pyINgJDBuaChS5UerOQd9qlvhhE3GNkAeEqyNfO34KKQwpGpWUn7dLfSih1ygb71OIHiLmutfVCH9R3yJXNserqvI52Y0z/8jgIo8DSr+MXUkYkQjowj+gOCpa3/PtDdmkAa6FhdnHWwTtv48gyubSnwe3fnqX8XzmgW2myNjGvAnnVCjzCqFryjwl0vw53GuZEDc6k7GYgBWNFSG8P1kazHXQObvFH9Vq91JBZ9s7NMJlObJyOlR+gK6m0l5nJrhNB2j49MlvQ83OJhlzcWGzoUHF8zWw=="/>
+	</cfdi:Complemento>
+</cfdi:Comprobante>
