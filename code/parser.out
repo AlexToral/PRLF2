@@ -2,99 +2,362 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Grammar
 
-Rule 0     S' -> expresion
-Rule 1     expresion -> expresion PLUS termino
-Rule 2     expresion -> expresion MINUS termino
-Rule 3     expresion -> termino
-Rule 4     termino -> NUM
+Rule 0     S' -> comprobante
+Rule 1     comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
+Rule 2     emisor -> LT TAG_NAME atributos SLASH GT
+Rule 3     receptor -> LT TAG_NAME atributos SLASH GT
+Rule 4     conceptos -> LT TAG_NAME GT concepto LT SLASH TAG_NAME GT
+Rule 5     concepto -> LT TAG_NAME atributos SLASH GT
+Rule 6     atributos -> atributo atributos
+Rule 7     atributos -> atributo
+Rule 8     atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
 
 Terminals, with rules where they appear
 
-MINUS                : 2
-NUM                  : 4
-PLUS                 : 1
+ATTRIBUTE_NAME       : 8
+ATTRIBUTE_VALUE      : 8
+EQUALS               : 8
+GT                   : 1 1 2 3 4 4 5
+LT                   : 1 1 2 3 4 4 5
+SLASH                : 1 2 3 4 5
+TAG_NAME             : 1 1 2 3 4 4 5
 error                : 
 
 Nonterminals, with rules where they appear
 
-expresion            : 1 2 0
-termino              : 1 2 3
+atributo             : 6 7
+atributos            : 1 2 3 5 6
+comprobante          : 0
+concepto             : 4
+conceptos            : 1
+emisor               : 1
+receptor             : 1
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . expresion
-    (1) expresion -> . expresion PLUS termino
-    (2) expresion -> . expresion MINUS termino
-    (3) expresion -> . termino
-    (4) termino -> . NUM
+    (0) S' -> . comprobante
+    (1) comprobante -> . LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
 
-    NUM             shift and go to state 3
+    LT              shift and go to state 2
 
-    expresion                      shift and go to state 1
-    termino                        shift and go to state 2
+    comprobante                    shift and go to state 1
 
 state 1
 
-    (0) S' -> expresion .
-    (1) expresion -> expresion . PLUS termino
-    (2) expresion -> expresion . MINUS termino
+    (0) S' -> comprobante .
 
-    PLUS            shift and go to state 4
-    MINUS           shift and go to state 5
 
 
 state 2
 
-    (3) expresion -> termino .
+    (1) comprobante -> LT . TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
 
-    PLUS            reduce using rule 3 (expresion -> termino .)
-    MINUS           reduce using rule 3 (expresion -> termino .)
-    $end            reduce using rule 3 (expresion -> termino .)
+    TAG_NAME        shift and go to state 3
 
 
 state 3
 
-    (4) termino -> NUM .
+    (1) comprobante -> LT TAG_NAME . atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
+    (6) atributos -> . atributo atributos
+    (7) atributos -> . atributo
+    (8) atributo -> . ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
 
-    PLUS            reduce using rule 4 (termino -> NUM .)
-    MINUS           reduce using rule 4 (termino -> NUM .)
-    $end            reduce using rule 4 (termino -> NUM .)
+    ATTRIBUTE_NAME  shift and go to state 6
 
+    atributos                      shift and go to state 4
+    atributo                       shift and go to state 5
 
 state 4
 
-    (1) expresion -> expresion PLUS . termino
-    (4) termino -> . NUM
+    (1) comprobante -> LT TAG_NAME atributos . GT emisor receptor conceptos LT SLASH TAG_NAME GT
 
-    NUM             shift and go to state 3
+    GT              shift and go to state 7
 
-    termino                        shift and go to state 6
 
 state 5
 
-    (2) expresion -> expresion MINUS . termino
-    (4) termino -> . NUM
+    (6) atributos -> atributo . atributos
+    (7) atributos -> atributo .
+    (6) atributos -> . atributo atributos
+    (7) atributos -> . atributo
+    (8) atributo -> . ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
 
-    NUM             shift and go to state 3
+    GT              reduce using rule 7 (atributos -> atributo .)
+    SLASH           reduce using rule 7 (atributos -> atributo .)
+    ATTRIBUTE_NAME  shift and go to state 6
 
-    termino                        shift and go to state 7
+    atributo                       shift and go to state 5
+    atributos                      shift and go to state 8
 
 state 6
 
-    (1) expresion -> expresion PLUS termino .
+    (8) atributo -> ATTRIBUTE_NAME . EQUALS ATTRIBUTE_VALUE
 
-    PLUS            reduce using rule 1 (expresion -> expresion PLUS termino .)
-    MINUS           reduce using rule 1 (expresion -> expresion PLUS termino .)
-    $end            reduce using rule 1 (expresion -> expresion PLUS termino .)
+    EQUALS          shift and go to state 9
 
 
 state 7
 
-    (2) expresion -> expresion MINUS termino .
+    (1) comprobante -> LT TAG_NAME atributos GT . emisor receptor conceptos LT SLASH TAG_NAME GT
+    (2) emisor -> . LT TAG_NAME atributos SLASH GT
 
-    PLUS            reduce using rule 2 (expresion -> expresion MINUS termino .)
-    MINUS           reduce using rule 2 (expresion -> expresion MINUS termino .)
-    $end            reduce using rule 2 (expresion -> expresion MINUS termino .)
+    LT              shift and go to state 10
+
+    emisor                         shift and go to state 11
+
+state 8
+
+    (6) atributos -> atributo atributos .
+
+    GT              reduce using rule 6 (atributos -> atributo atributos .)
+    SLASH           reduce using rule 6 (atributos -> atributo atributos .)
+
+
+state 9
+
+    (8) atributo -> ATTRIBUTE_NAME EQUALS . ATTRIBUTE_VALUE
+
+    ATTRIBUTE_VALUE shift and go to state 12
+
+
+state 10
+
+    (2) emisor -> LT . TAG_NAME atributos SLASH GT
+
+    TAG_NAME        shift and go to state 13
+
+
+state 11
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor . receptor conceptos LT SLASH TAG_NAME GT
+    (3) receptor -> . LT TAG_NAME atributos SLASH GT
+
+    LT              shift and go to state 14
+
+    receptor                       shift and go to state 15
+
+state 12
+
+    (8) atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE .
+
+    ATTRIBUTE_NAME  reduce using rule 8 (atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE .)
+    GT              reduce using rule 8 (atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE .)
+    SLASH           reduce using rule 8 (atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE .)
+
+
+state 13
+
+    (2) emisor -> LT TAG_NAME . atributos SLASH GT
+    (6) atributos -> . atributo atributos
+    (7) atributos -> . atributo
+    (8) atributo -> . ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
+
+    ATTRIBUTE_NAME  shift and go to state 6
+
+    atributos                      shift and go to state 16
+    atributo                       shift and go to state 5
+
+state 14
+
+    (3) receptor -> LT . TAG_NAME atributos SLASH GT
+
+    TAG_NAME        shift and go to state 17
+
+
+state 15
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor . conceptos LT SLASH TAG_NAME GT
+    (4) conceptos -> . LT TAG_NAME GT concepto LT SLASH TAG_NAME GT
+
+    LT              shift and go to state 18
+
+    conceptos                      shift and go to state 19
+
+state 16
+
+    (2) emisor -> LT TAG_NAME atributos . SLASH GT
+
+    SLASH           shift and go to state 20
+
+
+state 17
+
+    (3) receptor -> LT TAG_NAME . atributos SLASH GT
+    (6) atributos -> . atributo atributos
+    (7) atributos -> . atributo
+    (8) atributo -> . ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
+
+    ATTRIBUTE_NAME  shift and go to state 6
+
+    atributos                      shift and go to state 21
+    atributo                       shift and go to state 5
+
+state 18
+
+    (4) conceptos -> LT . TAG_NAME GT concepto LT SLASH TAG_NAME GT
+
+    TAG_NAME        shift and go to state 22
+
+
+state 19
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos . LT SLASH TAG_NAME GT
+
+    LT              shift and go to state 23
+
+
+state 20
+
+    (2) emisor -> LT TAG_NAME atributos SLASH . GT
+
+    GT              shift and go to state 24
+
+
+state 21
+
+    (3) receptor -> LT TAG_NAME atributos . SLASH GT
+
+    SLASH           shift and go to state 25
+
+
+state 22
+
+    (4) conceptos -> LT TAG_NAME . GT concepto LT SLASH TAG_NAME GT
+
+    GT              shift and go to state 26
+
+
+state 23
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT . SLASH TAG_NAME GT
+
+    SLASH           shift and go to state 27
+
+
+state 24
+
+    (2) emisor -> LT TAG_NAME atributos SLASH GT .
+
+    LT              reduce using rule 2 (emisor -> LT TAG_NAME atributos SLASH GT .)
+
+
+state 25
+
+    (3) receptor -> LT TAG_NAME atributos SLASH . GT
+
+    GT              shift and go to state 28
+
+
+state 26
+
+    (4) conceptos -> LT TAG_NAME GT . concepto LT SLASH TAG_NAME GT
+    (5) concepto -> . LT TAG_NAME atributos SLASH GT
+
+    LT              shift and go to state 29
+
+    concepto                       shift and go to state 30
+
+state 27
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH . TAG_NAME GT
+
+    TAG_NAME        shift and go to state 31
+
+
+state 28
+
+    (3) receptor -> LT TAG_NAME atributos SLASH GT .
+
+    LT              reduce using rule 3 (receptor -> LT TAG_NAME atributos SLASH GT .)
+
+
+state 29
+
+    (5) concepto -> LT . TAG_NAME atributos SLASH GT
+
+    TAG_NAME        shift and go to state 32
+
+
+state 30
+
+    (4) conceptos -> LT TAG_NAME GT concepto . LT SLASH TAG_NAME GT
+
+    LT              shift and go to state 33
+
+
+state 31
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME . GT
+
+    GT              shift and go to state 34
+
+
+state 32
+
+    (5) concepto -> LT TAG_NAME . atributos SLASH GT
+    (6) atributos -> . atributo atributos
+    (7) atributos -> . atributo
+    (8) atributo -> . ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE
+
+    ATTRIBUTE_NAME  shift and go to state 6
+
+    atributos                      shift and go to state 35
+    atributo                       shift and go to state 5
+
+state 33
+
+    (4) conceptos -> LT TAG_NAME GT concepto LT . SLASH TAG_NAME GT
+
+    SLASH           shift and go to state 36
+
+
+state 34
+
+    (1) comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT .
+
+    $end            reduce using rule 1 (comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT .)
+
+
+state 35
+
+    (5) concepto -> LT TAG_NAME atributos . SLASH GT
+
+    SLASH           shift and go to state 37
+
+
+state 36
+
+    (4) conceptos -> LT TAG_NAME GT concepto LT SLASH . TAG_NAME GT
+
+    TAG_NAME        shift and go to state 38
+
+
+state 37
+
+    (5) concepto -> LT TAG_NAME atributos SLASH . GT
+
+    GT              shift and go to state 39
+
+
+state 38
+
+    (4) conceptos -> LT TAG_NAME GT concepto LT SLASH TAG_NAME . GT
+
+    GT              shift and go to state 40
+
+
+state 39
+
+    (5) concepto -> LT TAG_NAME atributos SLASH GT .
+
+    LT              reduce using rule 5 (concepto -> LT TAG_NAME atributos SLASH GT .)
+
+
+state 40
+
+    (4) conceptos -> LT TAG_NAME GT concepto LT SLASH TAG_NAME GT .
+
+    LT              reduce using rule 4 (conceptos -> LT TAG_NAME GT concepto LT SLASH TAG_NAME GT .)
 

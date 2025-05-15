@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'MINUS NUM PLUS\n    expresion : expresion PLUS termino\n              | expresion MINUS termino\n    expresion : terminotermino : NUM'
+_lr_signature = 'ATTRIBUTE_NAME ATTRIBUTE_VALUE EQUALS GT LT SLASH TAG_NAMEcomprobante : LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GTemisor : LT TAG_NAME atributos SLASH GTreceptor : LT TAG_NAME atributos SLASH GTconceptos : LT TAG_NAME GT concepto LT SLASH TAG_NAME GTconcepto : LT TAG_NAME atributos SLASH GTatributos : atributo atributos\n                 | atributoatributo : ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE'
     
-_lr_action_items = {'NUM':([0,4,5,],[3,3,3,]),'$end':([1,2,3,6,7,],[0,-3,-4,-1,-2,]),'PLUS':([1,2,3,6,7,],[4,-3,-4,-1,-2,]),'MINUS':([1,2,3,6,7,],[5,-3,-4,-1,-2,]),}
+_lr_action_items = {'LT':([0,7,11,15,19,24,26,28,30,39,40,],[2,10,14,18,23,-2,29,-3,33,-5,-4,]),'$end':([1,34,],[0,-1,]),'TAG_NAME':([2,10,14,18,27,29,36,],[3,13,17,22,31,32,38,]),'ATTRIBUTE_NAME':([3,5,12,13,17,32,],[6,6,-8,6,6,6,]),'GT':([4,5,8,12,20,22,25,31,37,38,],[7,-7,-6,-8,24,26,28,34,39,40,]),'SLASH':([5,8,12,16,21,23,33,35,],[-7,-6,-8,20,25,27,36,37,]),'EQUALS':([6,],[9,]),'ATTRIBUTE_VALUE':([9,],[12,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'expresion':([0,],[1,]),'termino':([0,4,5,],[2,6,7,]),}
+_lr_goto_items = {'comprobante':([0,],[1,]),'atributos':([3,5,13,17,32,],[4,8,16,21,35,]),'atributo':([3,5,13,17,32,],[5,5,5,5,5,]),'emisor':([7,],[11,]),'receptor':([11,],[15,]),'conceptos':([15,],[19,]),'concepto':([26,],[30,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,9 +26,13 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> expresion","S'",1,None,None,None),
-  ('expresion -> expresion PLUS termino','expresion',3,'p_expresion','parser.py',7),
-  ('expresion -> expresion MINUS termino','expresion',3,'p_expresion','parser.py',8),
-  ('expresion -> termino','expresion',1,'p_expresion_termino','parser.py',17),
-  ('termino -> NUM','termino',1,'p_termino_num','parser.py',22),
+  ("S' -> comprobante","S'",1,None,None,None),
+  ('comprobante -> LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT','comprobante',11,'p_comprobante','parser4.py',10),
+  ('emisor -> LT TAG_NAME atributos SLASH GT','emisor',5,'p_emisor','parser4.py',17),
+  ('receptor -> LT TAG_NAME atributos SLASH GT','receptor',5,'p_receptor','parser4.py',24),
+  ('conceptos -> LT TAG_NAME GT concepto LT SLASH TAG_NAME GT','conceptos',8,'p_conceptos','parser4.py',31),
+  ('concepto -> LT TAG_NAME atributos SLASH GT','concepto',5,'p_concepto','parser4.py',38),
+  ('atributos -> atributo atributos','atributos',2,'p_atributos','parser4.py',45),
+  ('atributos -> atributo','atributos',1,'p_atributos','parser4.py',46),
+  ('atributo -> ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE','atributo',3,'p_atributo','parser4.py',50),
 ]
