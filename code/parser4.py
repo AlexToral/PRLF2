@@ -9,52 +9,65 @@ receptor_attrs = {}
 
 # Reglas sintácticas
 
-def p_tag_autocontenida(p):
-    'tag : LT TAG_NAME atributos SLASH_GT'
-    # Manejar <cfdi:Emisor ... />
-    p[0] = {'tag': p[2], 'attrs': p[3], 'children': []}
-
-
 def p_comprobante(p):
-    '''
-    comprobante : LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT
-    '''
+    '''comprobante : LT TAG_NAME atributos GT emisor receptor conceptos LT SLASH TAG_NAME GT'''
+    global valid
     if p[2] != 'cfdi:Comprobante' or p[10] != 'cfdi:Comprobante':
-        print(" Las etiquetas <cfdi:Comprobante> no coinciden")
-        global valid
+        print("[SINTÁCTICO] ❌ Las etiquetas <cfdi:Comprobante> no coinciden")
         valid = False
     else:
-        print("[SINTÁCTICO] ✅ Nodo <cfdi:Comprobante> estructuralmente correcto")
+        attrs = p[3]
+        esperados = ['Version', 'Fecha', 'Total', 'SubTotal', 'Moneda', 'TipoDeComprobante', 'LugarExpedicion', 'Exportacion', 'xmlns:cfdi']
+        faltantes = [a for a in esperados if a not in attrs]
+        if faltantes:
+            print(f"[SEMÁNTICO] ❌ Faltan atributos en <cfdi:Comprobante>: {', '.join(faltantes)}")
+            valid = False
+        else:
+            print("[SINTÁCTICO] ✅ Nodo <cfdi:Comprobante> correcto con atributos válidos")
 
 def p_emisor(p):
     'emisor : LT TAG_NAME atributos SLASH_GT'
-    global valid, emisor_attrs
+    global valid
     if p[2] != 'cfdi:Emisor':
-        print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Emisor>")
+        print("[SINTÁCTICO] ❌ Nodo <cfdi:Emisor> incorrecto")
         valid = False
     else:
-        emisor_attrs = p[3]
-        print("[SINTÁCTICO] ✅ Nodo <cfdi:Emisor> correcto")
+        esperados = ['Rfc', 'Nombre', 'RegimenFiscal']
+        faltantes = [a for a in esperados if a not in p[3]]
+        if faltantes:
+            print(f"[SEMÁNTICO] ❌ Faltan atributos en <cfdi:Emisor>: {', '.join(faltantes)}")
+            valid = False
+        else:
+            print("[SINTÁCTICO] ✅ Nodo <cfdi:Emisor> correcto")
+
 
 def p_receptor(p):
     'receptor : LT TAG_NAME atributos SLASH_GT'
-    global valid, receptor_attrs
+    global valid
     if p[2] != 'cfdi:Receptor':
-        print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Receptor>")
+        print("[SINTÁCTICO] ❌ Nodo <cfdi:Receptor> incorrecto")
         valid = False
     else:
-        receptor_attrs = p[3]
-        print("[SINTÁCTICO] ✅ Nodo <cfdi:Receptor> correcto")
+        esperados = ['Rfc', 'Nombre', 'DomicilioFiscalReceptor', 'RegimenFiscalReceptor', 'UsoCFDI']
+        faltantes = [a for a in esperados if a not in p[3]]
+        if faltantes:
+            print(f"[SEMÁNTICO] ❌ Faltan atributos en <cfdi:Receptor>: {', '.join(faltantes)}")
+            valid = False
+        else:
+            print("[SINTÁCTICO] ✅ Nodo <cfdi:Receptor> correcto")
 
 def p_conceptos(p):
-    'conceptos : LT TAG_NAME GT concepto LT SLASH TAG_NAME GT'
+    'conceptos : LT TAG_NAME GT lista_conceptos LT SLASH TAG_NAME GT'
     global valid
-    if p[2] != 'cfdi:Conceptos' or p[7] != 'cfdi:Conceptos':
-        
+    if p[2] != 'cfdi:Conceptos' or p[6] != 'cfdi:Conceptos':
         print("[SINTÁCTICO] ❌ Etiquetas <cfdi:Conceptos> no coinciden")
         valid = False
     else:
         print("[SINTÁCTICO] ✅ Nodo <cfdi:Conceptos> correcto")
+
+def p_lista_conceptos(p):
+    '''lista_conceptos : lista_conceptos concepto
+                       | concepto'''
 
 def p_concepto(p):
     'concepto : LT TAG_NAME atributos SLASH_GT'
@@ -63,28 +76,27 @@ def p_concepto(p):
         print("[SINTÁCTICO] ❌ Se esperaba <cfdi:Concepto>")
         valid = False
     else:
-        print("[SINTÁCTICO] ✅ Nodo <cfdi:Concepto> correcto")
+        esperados = ['ClaveProdServ', 'Cantidad', 'ClaveUnidad', 'Descripcion', 'ValorUnitario', 'Importe']
+        faltantes = [attr for attr in esperados if attr not in p[3]]
+        if faltantes:
+            print(f"[SEMÁNTICO] ❌ Faltan atributos en <cfdi:Concepto>: {', '.join(faltantes)}")
+            valid = False
+        else:
+            print("[SINTÁCTICO] ✅ Nodo <cfdi:Concepto> correcto")
 
 def p_atributos(p):
-    '''
-    atributos : atributo atributos
-              | atributo
-              | empty
-    '''
-    if len(p) == 3:
-        p[0] = {**p[1], **p[2]}
-    elif len(p) == 2:
-        p[0] = p[1]
+    '''atributos : atributos atributo
+                 | atributo'''
+    if len(p) == 2:
+        p[0] = dict([p[1]])
     else:
-        p[0] = {}
+        p[0] = p[1]
+        p[0].update([p[2]])
 
 def p_atributo(p):
     'atributo : ATTRIBUTE_NAME EQUALS ATTRIBUTE_VALUE'
-    p[0] = {p[1]: p[3]}
+    p[0] = (p[1], p[3].strip('"'))
 
-def p_empty(p):
-    'empty :'
-    p[0] = {}
 
 def p_error(p):
     global valid
